@@ -1,0 +1,2 @@
+model_checkpoint_path: "/home/hiranumn/DeepAccNetBert/models/regular_rep2/model.ckpt"
+all_model_checkpoint_paths: "/home/hiranumn/DeepAccNetBert/models/regular_rep2/model.ckpt"
