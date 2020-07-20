@@ -1,5 +1,5 @@
 
-<img src="figures/concept2.png" width="60%">
+<img src="figures/ipdlogo.png">
 
 # ErrorPredictor.py
 A script for predicting protein model accuracy.
