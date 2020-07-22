@@ -6,35 +6,29 @@ This repo is currently under construction. Please see (https://github.com/hiranu
 A script for predicting protein model accuracy.
 
 ```
-usage: ErrorPredictor.py [-h] [--pdb] [--multiDecoy] [--reference]
-                         [--noEnsemble] [--leavetemp] [--verbose]
-                         [--process PROCESS] [--gpu GPU] [--featurize]
-                         [--reprocess]
-                         infolder ...
+usage: DeepAccNet.py [-h] [--pdb] [--csv] [--ensemble] [--leaveTempFile] [--verbose] [--process PROCESS] [--gpu GPU]
+                     [--featurize] [--reprocess]
+                     input ...
 
 Error predictor network
 
 positional arguments:
-  infolder              input folder name full of pdbs or path to a single pdb
-  outfolder             output folder name. If a pdb path is passed this needs
-                        to be a .npz file. Can also be empty. Default is
-                        current folder or pdbname.npz
+  input                 path to input folder or input pdb file
+  output                path to output (folder path, npz, or csv)
 
 optional arguments:
   -h, --help            show this help message and exit
-  --pdb, -pdb           Running on a single pdb file instead of a folder
+  --pdb, -pdb           Running on a single pdb file instead of a folder (Default: False)
+  --csv, -csv           Writing results to a csv file (Default: False)
+  --ensemble, -e        Running with ensembling of 4 models. This adds 4x computational time with some overheads
                         (Default: False)
-  --multiDecoy, -mm     running the multi-model option (Default: False)
-  --reference, -ref     running the reference model trained based on distance
-                        information only. (Default: False)
-  --noEnsemble, -ne     running without model ensembling (Default: False)
-  --leavetemp, -lt      leaving temporary files (Default: False)
-  --verbose, -v         verbose flag (Default: False)
+  --leaveTempFile, -lt  Leaving temporary files (Default: False)
+  --verbose, -v         Activating verbose flag (Default: False)
   --process PROCESS, -p PROCESS
-                        # of cpus to use for featurization (Default: 1)
-  --gpu GPU, -g GPU     gpu device to use (default gpu0)
-  --featurize, -f       running only featurization (Default: False)
-  --reprocess, -r       reprocessing all feature files (Default: False)
+                        Specifying # of cpus to use for featurization (Default: 1)
+  --gpu GPU, -g GPU     Specifying gpu device to use (default gpu0)
+  --featurize, -f       Running only the featurization part(Default: False)
+  --reprocess, -r       Reprocessing all feature files (Default: False)
 
 v0.0.1
 ```
