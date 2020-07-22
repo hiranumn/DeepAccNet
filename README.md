@@ -3,7 +3,7 @@ This repo is currently under construction. Please see (https://github.com/hiranu
 <img src="figures/ipdlogo.png">
 
 # ErrorPredictor.py
-A script for predicting protein model accuracy.
+Implemenation of DeepAccNet described in https://www.biorxiv.org/content/10.1101/2020.07.17.209643v1
 
 ```
 usage: DeepAccNet.py [-h] [--pdb] [--csv] [--ensemble] [--leaveTempFile] [--verbose] [--process PROCESS] [--gpu GPU]
