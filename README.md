@@ -5,6 +5,8 @@ This repo is currently under construction. Please see (https://github.com/hiranu
 # ErrorPredictor.py
 Implemenation of DeepAccNet described in https://www.biorxiv.org/content/10.1101/2020.07.17.209643v1
 
+This method will estimate how good your proteins are using a metric called l-DDT (local distance difference test).
+
 ```
 usage: DeepAccNet.py [-h] [--pdb] [--csv] [--ensemble] [--leaveTempFile] [--verbose] [--process PROCESS] [--gpu GPU]
                      [--featurize] [--reprocess]
