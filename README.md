@@ -34,7 +34,7 @@ optional arguments:
 
 v0.0.1
 ```
-# Example usages (for IPD people)
+# Example usages (for IPD users)
 Type the following commands to activate tensorflow environment with pyrosetta3.
 ```
 source activate tensorflow
@@ -43,21 +43,25 @@ source /software/pyrosetta3/setup.sh
 
 Running on a folder of pdbs (foldername: ```samples```)
 ```
-python ErrorPredictor.py -r -v samples outputs
+python DeepAccNet.py -r -v samples outputs
+```
+Running on a folder of pdbs (foldername: ```samples```) and report to a csv file.
+```
+python DeepAccNet.py -r -v --csv samples output.csv
 ```
 
 Running on a single pdb file (inputname: ```input.pdb```). Output name is optional and defaults to input.npz
 ```
-python ErrorPredictor.py -r -v --pdb input.pdb [output.npz]
+python DeepAccNet.py -r -v --pdb input.pdb [output.npz]
 ```
 
 Only doing the feature processing (foldername: ```samples```)
 ```
-python ErrorPredictor.py -r -v -f samples outputs
+python DeepAccNet.py -r -v -f samples outputs
 ```
 
 # How to look at outputs
-Output of the network is written to ```[input_file_name].npz.```
+Output of the network is written to ```[input_file_name].npz```, unless you had the ```--csv``` flag on.
 You can extract the predictions as follows.
 
 ```
