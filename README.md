@@ -51,12 +51,12 @@ Running on a folder of pdbs (foldername: ```samples```)
 ```
 python DeepAccNet.py -r -v samples outputs
 ```
-Running on a folder of pdbs (foldername: ```samples```) and report to a csv file.
+Running on a folder of pdbs (foldername: ```samples```) and report to a csv file (outputname: ```output.csv```).
 ```
 python DeepAccNet.py -r -v --csv samples output.csv
 ```
 
-Running on a single pdb file (inputname: ```input.pdb```). Output name is optional and defaults to input.npz
+Running on a single pdb file (inputname: ```input.pdb```). Output name is optional and defaults to ```input.npz```.
 ```
 python DeepAccNet.py -r -v --pdb input.pdb [output.npz]
 ```
@@ -84,16 +84,9 @@ Perhaps ```lddt``` is the easiest place to start as it is per-residue quality sc
 If you want to do something more involved, especially for protein complex design, see [example.ipynb](ipynbs/example.ipynb) for getting more specialized metrics. If you want to play with pair-wise error predictions, [samples.ipynb](ipynbs/samples.ipynb) is a good place to start.
 
 # Trouble shooting
-- If ErrorPredictor.py returns an OOM (out of memory) error, your protein is probably too big. Try getting on titan instead of rtx2080 or run without gpu if running time is not your problem. You can also truncate your protein structures although it is not recommended.
-- If you get an import error for pyErrorPred, you probably moved the script out of LocalAccuacyPredictor. In that case, you would have to add pyErrorPred to python path or do so within the script. 
+- If DeepAccNet.py returns an OOM (out of memory) error, your protein is probably too big. Try getting on titan instead of rtx2080 or run without gpu if running time is not your problem. You can also run it on cpus although it would be slow.
+- If you get an import error for pyErrorPred, you probably moved the script out of the DeepAccNet folder. In that case, you would have to add pyErrorPred to python path or do so within the script. 
 - Send an e-mail at hiranumn at cs dot washington dot edu.
 
-
-
 # Updates
-- Added reference state mode, 2019.12.4
-- Reorganized code so that it is a python package, 2019.11.10
-- Added some analysis code, 2019.11.6
-- Distance matrix calculation speed-up, 2019.10.25
-- v 0.0.1 released, 2019.10.19
-# DeepAccNet
+- Repo initialized 2020.7.20
