@@ -2,10 +2,10 @@ This repo is currently under construction. Please see (https://github.com/hiranu
 
 <img src="figures/ipdlogo.png">
 
-# ErrorPredictor.py
+# DeepAccNet.py
 Implemenation of DeepAccNet described in https://www.biorxiv.org/content/10.1101/2020.07.17.209643v1
 
-This method will estimate how good your proteins are using a metric called l-DDT (local distance difference test).
+This method will estimate how good your protein models are using a metric called l-DDT (local distance difference test).
 
 ```
 usage: DeepAccNet.py [-h] [--pdb] [--csv] [--ensemble] [--leaveTempFile] [--verbose] [--process PROCESS] [--gpu GPU]
@@ -34,6 +34,12 @@ optional arguments:
 
 v0.0.1
 ```
+
+# Required softwares
+- Python3.5>
+- Pyrosetta 
+- Tensorflow 1.14 (not Tensorflow 2.0)
+
 # Example usages (for IPD users)
 Type the following commands to activate tensorflow environment with pyrosetta3.
 ```
@@ -82,10 +88,7 @@ If you want to do something more involved, especially for protein complex design
 - If you get an import error for pyErrorPred, you probably moved the script out of LocalAccuacyPredictor. In that case, you would have to add pyErrorPred to python path or do so within the script. 
 - Send an e-mail at hiranumn at cs dot washington dot edu.
 
-# Required softwares
-- Python3.5>
-- Pyrosetta 
-- Tensorflow 1.14 (not Tensorflow 2.0)
+
 
 # Updates
 - Added reference state mode, 2019.12.4
