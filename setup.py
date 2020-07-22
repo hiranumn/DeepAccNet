@@ -25,7 +25,7 @@ setup(
     name="pyErrorPred",
     version="0.0.1",
     packages=find_packages(),
-    scripts=['ErrorPredictor.py'],
+    scripts=['DeepAccNet.py'],
 
     # Project uses reStructuredText, so ensure that the docutils get
     # installed or upgraded on the target machine
@@ -61,7 +61,7 @@ setup(
     keywords="Tensorflow Python proteins local accuracy",
 
     # project home page, if any
-#    url=
+    #    url=
 
     # could also include long_description, download_url, classifiers, etc.
 )
