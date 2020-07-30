@@ -190,12 +190,11 @@ def main():
             pool = multiprocessing.Pool(num_process)
             out = pool.map(pyErrorPred.process, arguments)
             
-        if args.verbose: print("using", modelpath)
-
         # Exit if only featurization is needed
         if args.featurize:
             return 0
         
+        if args.verbose: print("using", modelpath)
         
         ###########################
         # Prediction happens here #
@@ -209,8 +208,6 @@ def main():
                                         verbose=args.verbose,
                                         ensemble=args.ensemble,
                                         csv = args.csv)
-        
-        print(result)
         
         if not args.csv:        
             if args.ensemble:
@@ -227,7 +224,7 @@ def main():
         else:
             # Take average of outputs
             csvfile = open(csvfilename, "w")
-            csvfile.write("sample\tcb-lddt")
+            csvfile.write("sample\tcb-lddt\n")
             for s in samples:
                 line = "%s\t%.4f\n"%(s, np.mean(result[s]))
                 csvfile.write(line)
