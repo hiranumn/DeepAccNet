@@ -79,6 +79,8 @@ def main():
     ################################
     # Checking file availabilities #
     ################################
+    csvfilename = "result.csv"
+    
     # made outfolder an optional positinal argument. So check manually it's lenght and unpack the string
     if len(args.output)>1:
         print(f"Only one output folder can be specified, but got {args.output}", file=sys.stderr)
@@ -102,14 +104,16 @@ def main():
         
         #default is input folder
         if args.output == "":
-            if not args.csv:
-                args.output = args.input
-            else:
-                args.output = join(os.path.splitext(args.input)[0], "result.csv")
+            args.output = args.input
         else:
             if not args.csv and not isdir(args.output):
                 if args.verbose: print("Creating output folder:", args.output)
                 os.mkdir(args.output)
+            
+            # if csv, do it in place.
+            elif args.csv:
+                csvfilename = args.output
+                args.output = args.input
           
     else:
         if not isfile(args.input):
@@ -197,25 +201,45 @@ def main():
         # Prediction happens here #
         ###########################
         samples = [s for s in samples if isfile(join(args.output, s+".features.npz"))]
-        pyErrorPred.predict(samples,
-                            modelpath,
-                            args.output,
-                            num_blocks=5,
-                            num_filters=128,
-                            verbose=args.verbose,
-                            ensemble=args.ensemble)
+        result = pyErrorPred.predict(samples,
+                                        modelpath,
+                                        args.output,
+                                        num_blocks=5,
+                                        num_filters=128,
+                                        verbose=args.verbose,
+                                        ensemble=args.ensemble,
+                                        csv = args.csv)
         
-        if args.ensemble:
-            pyErrorPred.merge(samples,
-                              args.output,
-                              verbose=args.verbose)
+        print(result)
+        
+        if not args.csv:        
+            if args.ensemble:
+                pyErrorPred.merge(samples,
+                                  args.output,
+                                  verbose=args.verbose)
 
-        if not args.leaveTempFile:
+            if not args.leaveTempFile:
+                pyErrorPred.clean(samples,
+                                  args.output,
+                                  verbose=args.verbose,
+                                  multimodel=False,
+                                  noEnsemble=not(args.ensemble))
+        else:
+            # Take average of outputs
+            csvfile = open(csvfilename, "w")
+            csvfile.write("sample\tcb-lddt")
+            for s in samples:
+                line = "%s\t%.4f\n"%(s, np.mean(result[s]))
+                csvfile.write(line)
+            csvfile.close()
+            
+            # Clean feature files
             pyErrorPred.clean(samples,
                               args.output,
                               verbose=args.verbose,
                               multimodel=False,
-                              noEnsemble=not(args.ensemble))
+                              noEnsemble=True)
+            
             
     # Processing for single sample
     else:
