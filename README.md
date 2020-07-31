@@ -42,7 +42,6 @@ v0.0.1
 Type the following commands to activate tensorflow environment with pyrosetta3.
 ```
 source activate tensorflow
-source /software/pyrosetta3/setup.sh
 ```
 
 Running on a folder of pdbs (foldername: ```samples```)
