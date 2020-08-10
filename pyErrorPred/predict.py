@@ -61,7 +61,12 @@ def seqsep(psize, normalizer=100, axis=-1):
             ret[i,j] = abs(i-j)*1.0/100-1.0
     return np.expand_dims(ret, axis)
     
-def predict(samples, modelpath, outfolder, num_blocks=5, num_filters=128, ensemble=False, verbose=False):
+def predict(samples, modelpath, outfolder, num_blocks=5, num_filters=128, ensemble=False, verbose=False, csv=False):
+    
+    result = {}
+    if csv:
+        for s in samples:
+            result[s] = []
     
     n_models = 5 if ensemble else 2
     for i in range(1, n_models):
@@ -86,16 +91,22 @@ def predict(samples, modelpath, outfolder, num_blocks=5, num_filters=128, ensemb
             tmp = join(outfolder, samples[j]+".features.npz")
             batch = getData(tmp)
             lddt, estogram, mask = model.predict(batch)
-            if not ensemble:
-                np.savez_compressed(join(outfolder, samples[j]+".npz"),
-                                    lddt = lddt,
-                                    estogram = estogram,
-                                    mask = mask)
+            
+            if not csv:
+                if not ensemble:
+                    np.savez_compressed(join(outfolder, samples[j]+".npz"),
+                                        lddt = lddt,
+                                        estogram = estogram,
+                                        mask = mask)
+                else:
+                    np.savez_compressed(join(outfolder, samples[j]+".rep"+str(i)+".npz"),
+                                        lddt = lddt,
+                                        estogram = estogram,
+                                        mask = mask)
             else:
-                np.savez_compressed(join(outfolder, samples[j]+".rep"+str(i)+".npz"),
-                                    lddt = lddt,
-                                    estogram = estogram,
-                                    mask = mask)
+                result[samples[j]].append(np.mean(lddt))
+                
+    return result
                 
 def merge(samples, outfolder, verbose=False):
     for j in range(len(samples)):
