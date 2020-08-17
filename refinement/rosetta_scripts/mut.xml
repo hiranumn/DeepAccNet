@@ -1,0 +1,49 @@
+<ROSETTASCRIPTS>
+  <TASKOPERATIONS>
+  </TASKOPERATIONS>
+  <SCOREFXNS>
+    <ScoreFunction name="stage1" weights="score3" symmetric="0">
+      <Reweight scoretype="atom_pair_constraint" weight="%%cst_weight%%"/>
+      <Reweight scoretype="dihedral_constraint" weight="1.0"/>
+      <Reweight scoretype="cen_hb" weight="5.0"/>
+      <Reweight scoretype="coordinate_constraint" weight="1.0"/>
+    </ScoreFunction>
+    <ScoreFunction name="stage2" weights="score4_smooth_cart" symmetric="0">
+      <Reweight scoretype="atom_pair_constraint" weight="%%cst_weight%%"/>
+      <Reweight scoretype="dihedral_constraint" weight="1.0"/>
+      <Reweight scoretype="cen_hb" weight="5.0"/>
+      <Reweight scoretype="cart_bonded" weight="0.2"/>
+      <Reweight scoretype="coordinate_constraint" weight="1.0"/>
+    </ScoreFunction>
+    <ScoreFunction name="fullatom" weights="%%fascore%%" symmetric="0"/>
+    <ScoreFunction name="fullatom2" weights="%%fascore%%" symmetric="0">
+      <Reweight scoretype="atom_pair_constraint" weight="%%cst_fa_weight%%"/>
+      <Reweight scoretype="dihedral_constraint" weight="1.0"/>
+      <Reweight scoretype="coordinate_constraint" weight="0.2"/>
+    </ScoreFunction>
+  </SCOREFXNS>
+  <FILTERS>
+  </FILTERS>
+  <MOVERS>
+    <Hybridize name="hybridize" stage1_scorefxn="stage1" stage2_scorefxn="stage2"
+	       fa_scorefxn="fullatom2" stage1_increase_cycles="1.0" stage2_increase_cycles="0.2"
+	       fragprob_stage2="0.8" randfragprob_stage2="0.8" fa_cst_file="%%facst%%"
+	       chunk_insertion_weight="0.01" big_frag_insertion_weight="0.99"
+	       batch="1" 
+	       >
+      <Fragments small="../t000_.3mers" big="../t000_.9mers"/>
+      <Template pdb="%%template1%%" weight="1.0" cst_file="%%cencst%%"/>
+    </Hybridize>
+    <FastRelax name="dualrelax" scorefxn="fullatom2"
+	       min_type="lbfgs_armijo_nonmonotone" relaxscript="%%scriptdir%%/rosetta_scripts/cart2.script"/>
+    <ConstraintSetMover name="cst" add_constraints="1" cst_file="%%facst%%"/>
+  </MOVERS>
+  <APPLY_TO_POSE>
+  </APPLY_TO_POSE>
+  <PROTOCOLS>
+    <Add mover="hybridize"/>
+    Add mover="cst"/>
+    <Add mover="dualrelax"/>
+  </PROTOCOLS>
+  <OUTPUT scorefxn="fullatom2"/>
+</ROSETTASCRIPTS>

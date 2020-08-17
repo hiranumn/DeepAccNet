@@ -1,0 +1,15 @@
+-in:file:fasta ../input.fa
+-fix_disulf ../disulf.def
+
+-mute core.scoring basic 
+-out:file:silent_struct_type binary
+
+# relax options
+-default_max_cycles 200
+-relax:min_type lbfgs_armijo_nonmonotone
+
+# hybrid options
+-overwrite
+-hb_cen_soft
+
+-parser:script_vars fascore=ref2015_cart
