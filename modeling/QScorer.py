@@ -18,7 +18,7 @@ class QScorer:
         for i,pose in enumerate(poses):
             pose.dump_pdb("tmp/tmp.%02d.pdb"%i)
         os.chdir('tmp')
-        os.system('python %s/ErrorPredictor.py -p %d ./ > DAN.logerr'%(DLPATH,self.ncore))
+        os.system('python %s/DeepAccNet.py -p %d ./ > DAN.logerr'%(DLPATH,self.ncore))
 
         n = len(poses)
         npzs = ['tmp.%02d.npz'%i for i in range(n)]

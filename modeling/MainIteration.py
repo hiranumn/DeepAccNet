@@ -269,7 +269,7 @@ def DAN_and_gen_restraints(tags_score, tags_cst,
         os.chdir(outpath)
         time0 = time.time()
         print( "Running DL predictions for", " ".join(tags_score) )
-        os.system('python %s/ErrorPredictor.py -p %d ./ 1> DANmsa.log'%(DANPATH,nproc))
+        os.system('python %s/DeepAccNet.py -p %d ./ 1> DANmsa.log'%(DANPATH,nproc))
         time1 = time.time()
         print( " -- DANmsa took %.1f seconds."%(time1-time0))
         os.chdir('..')
@@ -540,7 +540,7 @@ def run_iter_recomb(runinfo):
     n = len(pdbs)
     if len(pdbs) != len(npzs):
         nproc = runinfo.opt.nproc
-        os.system('python %s/ErrorPredictor.py -p %d ./ 1> DANmsa.log'%(DANPATH,nproc))
+        os.system('python %s/DeepAccNet.py -p %d ./ 1> DANmsa.log'%(DANPATH,nproc))
     
     all_idx = list(range(n))
     logout = open('combination.log','w')
@@ -591,14 +591,11 @@ def finalize(runinfo):
     if not os.path.exists('%s/sel.out'%refpath):
         sys.exit("Final output %s/sel.out does not exist!"%refpath)
 
-    os.system('%s/source/bin/extract_pdbs%s'%(ROSETTAPATH,ROSETTASUFFIX)+\
-              ' -in:file:silent ref.out 1> /dev/null 2>/dev/null')
     os.system('cp %s/sel.out %s/ref.out'%(refpath,workpath))
     os.chdir(workpath)
-
-    tags = [l[:-4] for l in glob.glob('iter%d*pdb'%final_iter)]
-
-    DAN_and_gen_restraints(tags, tags, outpath='pred', generate_cst=False, nproc=min(50,runinfo.opt.nproc))
+    
+    os.system('%s/source/bin/extract_pdbs%s'%(ROSETTAPATH,ROSETTASUFFIX)+\
+              ' -in:file:silent ref.out 1> /dev/null 2>/dev/null')
 
 def main(args):
     runinfo = RunInfo(args)
