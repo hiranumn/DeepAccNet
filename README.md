@@ -5,10 +5,6 @@ Python-PyTorch implemenation of DeepAccNet described in https://www.biorxiv.org/
 
 This method will estimate how good your protein models are using a metric called l-DDT (local distance difference test).
 
-For the previous TensorFlow implementation, please see: https://github.com/hiranumn/DeepAccNet-TF
-For the MSA version of DeepAccNet, please see: https://github.com/hiranumn/DeepAccNet-MSA
-We plan to merge these repo to this repo very soon.
-
 ```
 usage: DeepAccNet.py [-h] [--modelpath MODELPATH] [--pdb] [--csv] [--leaveTempFile] [--process PROCESS] [--featurize]
                      [--reprocess] [--verbose] [--bert] [--ensemble]
@@ -38,6 +34,10 @@ optional arguments:
 
 v0.0.1
 ```
+
+For the previous TensorFlow implementation, please see: https://github.com/hiranumn/DeepAccNet-TF.
+For the MSA version of DeepAccNet, please see: https://github.com/hiranumn/DeepAccNet-MSA.
+We plan to merge these repo to this repo very soon.
 
 # Softwares
 - Python > 3.5
