@@ -43,7 +43,7 @@ We plan to merge these repo to this repo very soon.
 - Python > 3.5
 - PyTorch 1.3
 - PyRosetta for DeepAccNet and DeepAccNet-Bert.
-- Tensorflow 2 for Bert embeddings
+- [ProtTrans](https://github.com/agemagician/ProtTrans) and the ProtBert model (second one in the model availability table) for DeepAccNet-Bert.
 - Tested on Ubuntu 20.04 LTS
 
 # Example usages (for IPD users)
