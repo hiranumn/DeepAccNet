@@ -73,7 +73,7 @@ mask = x["mask"]           # mask predicting native < 15
 ```
 Perhaps ```lddt``` is the easiest place to start as it is per-residue quality score. You can simply take an average if you want a global score per protein structure. 
 
-If you want to do something more involved, especially for protein complex design, see [example.ipynb](ipynbs/example.ipynb) for getting more specialized metrics. If you want to play with pair-wise error predictions, [samples.ipynb](ipynbs/samples.ipynb) is a good place to start.
+If you want to do something more involved, [check.ipynb](ipynbs/check.ipynb) is a good place to start.
 
 # Trouble shooting
 - If DeepAccNet.py returns an OOM (out of memory) error, your protein is probably too big. Try getting on titan instead of rtx2080 or run without gpu if running time is not your problem. You can also run it on cpus although it would be slow.
