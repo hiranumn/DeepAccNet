@@ -1,0 +1,26 @@
+# First set of runs
+python /home/hiranumn/PyTorchDeepAccNet/train.py /home/hiranumn/PyTorchDeepAccNet/models/standard_rep1
+python /home/hiranumn/PyTorchDeepAccNet/train.py --bert /home/hiranumn/PyTorchDeepAccNet/models/bert_rep1
+python /home/hiranumn/PyTorchDeepAccNet/train.py --multi_dir /home/hiranumn/PyTorchDeepAccNet/models/MoreDecoy_rep1
+python /home/hiranumn/PyTorchDeepAccNet/train.py --bert --multi_dir /home/hiranumn/PyTorchDeepAccNet/models/MoreDecoyBert_rep1
+python /home/hiranumn/DeepAccNetBert/train.py --multi_dir /home/hiranumn/DeepAccNetBert/models/MoreDecoy_rep1
+python /home/hiranumn/DeepAccNetBert/train.py --bert --multi_dir /home/hiranumn/DeepAccNetBert/models/MoreDecoyBert_rep1
+
+# For revision
+python /home/hiranumn/PyTorchDeepAccNet/train.py --multi_dir /home/hiranumn/PyTorchDeepAccNet/models/NatComm_standard
+python /home/hiranumn/PyTorchDeepAccNet/train.py --multi_dir --bert /home/hiranumn/PyTorchDeepAccNet/models/NatComm_bert
+
+# Feature analysis
+python /home/hiranumn/PyTorchDeepAccNet/train-distance.py --multi_dir /home/hiranumn/PyTorchDeepAccNet/models/NatComm_FA_distance
+python /home/hiranumn/PyTorchDeepAccNet/train-distance3D.py --multi_dir /home/hiranumn/PyTorchDeepAccNet/models/NatComm_FA_distance3D
+python /home/hiranumn/PyTorchDeepAccNet/train-distanceBert.py --multi_dir --bert /home/hiranumn/PyTorchDeepAccNet/models/NatComm_FA_distanceBert
+python /home/hiranumn/PyTorchDeepAccNet/train-distance3DBert.py --multi_dir --bert /home/hiranumn/PyTorchDeepAccNet/models/NatComm_FA_distance3DBert
+
+python /home/hiranumn/PyTorchDeepAccNet/train-distanceRosetta.py --multi_dir /home/hiranumn/PyTorchDeepAccNet/models/NatComm_FA_distanceRosetta
+python /home/hiranumn/PyTorchDeepAccNet/train-distanceAA.py --multi_dir /home/hiranumn/PyTorchDeepAccNet/models/NatComm_FA_distanceAA
+python /home/hiranumn/PyTorchDeepAccNet/train-distanceSS.py --multi_dir /home/hiranumn/PyTorchDeepAccNet/models/NatComm_FA_distanceSS
+python /home/hiranumn/PyTorchDeepAccNet/train-distanceAngleOrientation.py --multi_dir /home/hiranumn/PyTorchDeepAccNet/models/NatComm_FA_distanceAngleOrientation
+
+
+
+
