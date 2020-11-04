@@ -56,7 +56,6 @@ source activate tensorflow
 Running on a folder of pdbs (foldername: ```samples```)
 ```
 python DeepAccNet.py -r -v samples outputs
-
 ```
 
 # How to look at outputs
