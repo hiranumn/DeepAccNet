@@ -38,7 +38,7 @@ v0.0.1
 - For the previous TensorFlow implementation, please see [here](https://github.com/hiranumn/DeepAccNet-TF).
 - For the MSA version of DeepAccNet, please see [here](https://github.com/hiranumn/DeepAccNet-MSA).
 - For the refinement script, please see the [modeling](modeling) folder.
-- The dataset used to train this model can be accessed through [here](https://files.ipd.uw.edu/pub/DeepAccNet/decoys8000k.zip).
+- The dataset used to train this model can be accessed through [here](https://files.ipd.uw.edu/pub/DeepAccNet/decoys8000k.zip). Training splits can be accessed through data/*_4.npy array.
 
 # Softwares
 - Python > 3.5
