@@ -22,12 +22,6 @@ def main():
                         action="store", nargs=argparse.REMAINDER,
                         help="path to output (folder path, npz, or csv)")
     
-    parser.add_argument("--modelpath",
-                        "-modelpath",
-                        action="store",
-                        default="NatComm_standard",
-                        help="modelpath (default: NatComm_standard")
-    
     parser.add_argument("--pdb",
                         "-pdb",
                         action="store_true",
@@ -137,7 +131,11 @@ def main():
         
     script_dir = os.path.dirname(__file__)
     base = os.path.join(script_dir, "models/")
-    modelpath = join(base, args.modelpath)
+    
+    if not args.bert:
+        modelpath = join(base, "NatComm_standard")
+    else:
+        modelpath = join(base, "NatComm_bert")
     
     # Eensemble is disabled right now.
     if not isdir(modelpath):
