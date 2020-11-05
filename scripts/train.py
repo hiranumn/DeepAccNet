@@ -101,7 +101,7 @@ def main():
     
     if not args.silent: print("Loading samples")
         
-    proteins = np.load(join(base, "train_proteins4.npy"))
+    proteins = np.load(join(base, "train_proteins.npy"))
     if args.debug: proteins = proteins[:100]
     train_decoys = deepAccNet.DecoyDataset(targets = proteins,
                                            lengthmax = lengthmax,
@@ -109,7 +109,7 @@ def main():
                                            multi_dir = args.multi_dir)
     train_dataloader = DataLoader(train_decoys, batch_size=1, shuffle=True, num_workers=4)
 
-    proteins = np.load(join(base, "valid_proteins4.npy"))
+    proteins = np.load(join(base, "valid_proteins.npy"))
     if args.debug: proteins = proteins[:100]
     valid_decoys = deepAccNet.DecoyDataset(targets = proteins, 
                                            lengthmax = lengthmax, 
