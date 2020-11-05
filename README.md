@@ -46,17 +46,13 @@ We plan to merge these repo to this repo very soon.
 - [ProtTrans](https://github.com/agemagician/ProtTrans) and the ProtBert model (second one in the model availability table) for DeepAccNet-Bert.
 - Tested on Ubuntu 20.04 LTS
 
-# Example usages (for IPD users)
-Type the following commands to activate tensorflow environment with pyrosetta3.
-
-```
-source activate tensorflow
-```
+# Example usages
 
 Running on a folder of pdbs (foldername: ```samples```)
 ```
 python DeepAccNet.py -r -v samples outputs
 ```
+(For IPD users, please use the ```tensorflow``` conda environment)
 
 # How to look at outputs
 Output of the network is written to ```[input_file_name].npz```, unless you had the ```--csv``` flag on.
