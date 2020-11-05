@@ -35,9 +35,9 @@ optional arguments:
 v0.0.1
 ```
 
-For the previous TensorFlow implementation, please see: https://github.com/hiranumn/DeepAccNet-TF.
-For the MSA version of DeepAccNet, please see: https://github.com/hiranumn/DeepAccNet-MSA.
-We plan to merge these repo to this repo very soon.
+- For the previous TensorFlow implementation, please see: https://github.com/hiranumn/DeepAccNet-TF.
+- For the MSA version of DeepAccNet, please see: https://github.com/hiranumn/DeepAccNet-MSA.
+- The repos listed above will be merged soon.
 
 # Softwares
 - Python > 3.5
