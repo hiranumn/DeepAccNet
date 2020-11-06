@@ -1,7 +1,7 @@
 <img src="figures/ipdlogo.png">
 
 # DeepAccNet.py
-Python-PyTorch implemenation of DeepAccNet described in https://www.biorxiv.org/content/10.1101/2020.07.17.209643v1
+Python-PyTorch implemenation of DeepAccNet described in https://www.biorxiv.org/content/10.1101/2020.07.17.209643v2
 
 This method will estimate how good your protein models are using a metric called l-DDT (local distance difference test).
 
