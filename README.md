@@ -39,6 +39,7 @@ v0.0.1
 - For the MSA version of DeepAccNet, please see [here](https://github.com/hiranumn/DeepAccNet-MSA).
 - For the refinement script, please see the [modeling](modeling) folder.
 - The dataset used to train this model can be accessed through [here](https://files.ipd.uw.edu/pub/DeepAccNet/decoys8000k.zip). Training splits can be accessed through [data](data)
+- DeepAccNet prediction on the test set can be downloaded [here](https://files.ipd.uw.edu/pub/DeepAccNet/test_oreds.zip).
 
 # Softwares
 - Python > 3.5
