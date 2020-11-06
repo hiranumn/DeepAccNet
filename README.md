@@ -18,8 +18,6 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  --modelpath MODELPATH, -modelpath MODELPATH
-                        modelpath (Default: NatComm_standard)
   --pdb, -pdb           Running on a single pdb file instead of a folder (Default: False)
   --csv, -csv           Writing results to a csv file (Default: False)
   --leaveTempFile, -lt  Leaving temporary files (Default: False)
