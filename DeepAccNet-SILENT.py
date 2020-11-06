@@ -9,6 +9,7 @@ import multiprocessing
 import torch
 import time
 import pandas as pd
+import os
 
 from pyrosetta import *
 from pyrosetta.rosetta import *
@@ -185,10 +186,12 @@ def main():
             # Write the result
             if args.binder:
                 r = per_sample_result
-                outfile.write("%s, %.2d, %.2d, %.2d\n"%(r[0], r[1], r[2], r[3]))
+                outfile.write("%s, %5f, %5f, %5f\n"%(r[0], r[1], r[2], r[3]))
             else:
                 r = per_sample_result
-                outfile.write("%s, %.2d\n"%(r[0], r[1]))
+                outfile.write("%s, %5f\n"%(r[0], r[1]))
+            outfile.flush()
+            os.fsync(outfile.fileno())
             
     outfile.close()
             
