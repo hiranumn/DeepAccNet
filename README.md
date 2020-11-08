@@ -36,8 +36,6 @@ v0.0.1
 - For the previous TensorFlow implementation, please see [here](https://github.com/hiranumn/DeepAccNet-TF).
 - For the MSA version of DeepAccNet, please see [here](https://github.com/hiranumn/DeepAccNet-MSA).
 - For the refinement script, please see the [modeling](modeling) folder.
-- The dataset used to train this model can be accessed through [here](https://files.ipd.uw.edu/pub/DeepAccNet/decoys8000k.zip). Training splits can be accessed through [data](data)
-- DeepAccNet prediction on the test set can be downloaded [here](https://files.ipd.uw.edu/pub/DeepAccNet/test_oreds.zip).
 
 # Softwares
 - Python > 3.5
@@ -76,6 +74,11 @@ If you want to do something more involved, [check.ipynb](ipynbs/check.ipynb) is 
 - If you get an import error for pyErrorPred, you probably moved the script out of the DeepAccNet folder. In that case, you would have to add pyErrorPred to python path or do so within the script. 
 - Send an e-mail at hiranumn at cs dot washington dot edu.
 
+# Resources
+- The dataset used to train this model can be accessed through [here](https://files.ipd.uw.edu/pub/DeepAccNet/decoys8000k.zip). Training splits can be accessed through [data](data)
+- DeepAccNet prediction on the test set can be downloaded [here](https://files.ipd.uw.edu/pub/DeepAccNet/test_oreds.zip).
+
 # Updates
 - Repo initialized 2020.7.20
 - Transitioned to PyTorch 2020.11.3
+- Added versions that do not depend on pyRosetta, "distance with 3D" and "distance with 3D and Bert" from the paper. 2020.11.6
