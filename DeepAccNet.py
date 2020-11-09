@@ -199,7 +199,6 @@ def main():
         ###########################
         
         if args.bert:            
-            print("hi", [join(args.output, "bert_"+s+".npy") for s in samples])
             samples = [s for s in samples if isfile(join(args.output, s+".features.npz")) and isfile(join(args.output, "bert_"+s+".npy"))]
 
         else:
