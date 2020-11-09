@@ -76,7 +76,9 @@ If you want to do something more involved, [check.ipynb](ipynbs/check.ipynb) is 
 
 # Resources
 - The dataset used to train this model can be accessed through [here](https://files.ipd.uw.edu/pub/DeepAccNet/decoys8000k.zip). Training splits can be accessed through [data](data)
-- DeepAccNet prediction on the test set can be downloaded [here](https://files.ipd.uw.edu/pub/DeepAccNet/test_oreds.zip).
+- DeepAccNet prediction on the test set can be downloaded [here](https://files.ipd.uw.edu/pub/DeepAccNet/test_preds.zip).
+- DeepAccNet prediction on the CAMEO set can be downloaded [here](https://files.ipd.uw.edu/pub/DeepAccNet/CAMEO_preds.zip).
+- DeepAccNet prediction on the CAMEO set can be downloaded [here](https://files.ipd.uw.edu/pub/DeepAccNet/CASP13_preds.zip).
 
 # Updates
 - Repo initialized 2020.7.20
