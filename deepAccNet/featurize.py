@@ -325,7 +325,7 @@ def set_neighbors3D(pdict):
         param1 (pdict): dictionary containing, pose, nres, lfr, Ca. They can be generated with functions above.
         See init_pose for how they are done.
 
-    Returns:
+    Pdict will have:
         inds: (#atoms) by 5 2D matrix containing (index of residue, x, y, z, channel)
         vals: (#atoms) by 1 matrix containing values to fill at each location defined by inds.
     """
@@ -425,11 +425,24 @@ def set_neighbors3D(pdict):
     # Making sure projected contacts fit into the box
     b = a[(np.min(a[:,1:4],axis=-1) >= 0) & (np.max(a[:,1:4],axis=-1) < nbins) & (a[:,5]>1e-5)]
     
+    # Storing the result in pdict.
     pdict['idx'] = b[:,:5].astype(np.uint16)
     pdict['val'] = b[:,5].astype(np.float16)
 
-
 def set_features1D(pdict):
+    """
+    A function that gets a part of 1D features.
+
+    Args:
+        param1 (pdict): dictionary containing pose.
+        
+    Pdict will have:    
+        seq: amino acid sequence
+        dssp8: dssp8 secondary structure
+        dssp3: dssp3 secondary structure
+        phi: phi angles
+        psi: psi angles
+    """
 
     p = pdict['pose']
     nres = pdict['nres']
@@ -664,6 +677,12 @@ def extractOneBodyTerms(pose, padval=0):
     return np.concatenate([bond_angles_lengths_mat, energy_term_mat, SS_mat]), features2+score_terms+["E", "L", "H"]
 
 def init_pose(pose):
+    """
+    A function that fills pdict with necessary information.
+    These are pose, #res, N, Ca, C, Cb coordinates, reference frame, 6D, 3D and 1D features.
+    See each function for what they are grabing.
+
+    """
     pdict = {}
     pdict['pose'] = pose
     pdict['nres'] = pyrosetta.rosetta.core.pose.nres_protein(pdict['pose'])
@@ -675,6 +694,14 @@ def init_pose(pose):
     return pdict
 
 def process(args):
+    """
+    A main function callled for featurization of a pdb file.
+    It takes a tuple of arguments:
+        filename: input pdb filename
+        outfile: output npz filename
+        verbose: verbosity
+
+    """
     filename, outfile, verbose = args
     try:
         start_time = time.time()
@@ -709,6 +736,11 @@ def process(args):
         print("While processing", outfile+":", inst)
         
 def process_from_pose(pose):
+    """
+    A main function callled for featurization of a pdb file.
+    This one, unlike the process() function, directly takes in a pose and output a dictionary.
+
+    """
     try:
         fa_scorefxn = get_fa_scorefxn()
         score = fa_scorefxn(pose)
@@ -739,6 +771,10 @@ def process_from_pose(pose):
         
 
 def parsePDB(filename, atom="CA"):
+    """
+    A function that parses pdbfile and returns "CA" atom xyz coordinates and aa sequence.
+
+    """
     file = open(filename, "r")
     lines = file.readlines()
     coords = []
@@ -766,7 +802,12 @@ def parsePDB(filename, atom="CA"):
     return np.array(coords), aas
     
         
+
 def generate_fasta(filename, outfile, verbose=False):
+    """
+    A function that parses pdbfile and writes out a .fasta file at outfile location.
+
+    """
     coords, aas = parsePDB(filename)
     output = ">"+filename+"\n"
     output += "".join([aanamemap[i] for i in aas])+"\n"
