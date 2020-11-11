@@ -330,66 +330,72 @@ def set_neighbors3D(pdict):
         vals: (#atoms) by 1 matrix containing values to fill at each location defined by inds.
     """
 
-    # get coordinates of all non-hydrogen atoms
-    # and their types
+    # Getting coordinates of all non-hydrogen atoms and their types
     xyz = []
     types = []
     pose = pdict['pose']
     nres = pdict['nres']
+    # Parse through residues
     for i in range(1,nres+1):
         r = pose.residue(i)
         rname = r.name()[:3]
+        # Parse through atoms
         for j in range(1,r.natoms()+1):
             aname = r.atom_name(j).strip()
             name = rname+'_'+aname
+            # Exclude hydrogen atoms
             if not r.atom_is_hydrogen(j) and aname != 'NV' and aname != 'OXT' and name in atypes:
+                # Record xyz coordinates
                 xyz.append(r.atom(j).xyz())
+                # Record atom types
                 types.append(atypes[name])
 
     xyz = np.array(xyz)
     xyz_ca = pdict['Ca']
     lfr = pdict['lfr']
 
-    # find neighbors and project onto
-    # local reference frames
+    # Finding neighbors and project onto local reference frames
+    # Using scipy cKDT tree to find neighbers in 14.0 A ball.
     dist = 14.0
     kd = scipy.spatial.cKDTree(xyz)
     kd_ca = scipy.spatial.cKDTree(xyz_ca)
     indices = kd_ca.query_ball_tree(kd, dist)
     idx = np.array([[i,j,types[j]] for i in range(len(indices)) for j in indices[i]])
 
+    # Shifting xyz coordinate based on Ca coordiantes so that all of them are centered around Ca per residue.
     xyz_shift = xyz[idx.T[1]] - xyz_ca[idx.T[0]]
+    # Using the new reference frame and projecting coordinates there.
     xyz_new = np.sum(lfr[idx.T[0]] * xyz_shift[:,None,:], axis=-1)
 
-    #
-    # discretize
-    #
+    # Discretizing inputs in bins
     nbins = 24
     width = 19.2
 
-    # total number of neighbors
+    # Total number of samples 
+    # This is not equal to the number of atoms.
+    # There might be atoms that are in multiple 14A balls..
     N = idx.shape[0]
 
-    # bin size
+    # Bin size
     h = width / (nbins-1)
     
-    # shift all contacts to the center of the box
-    # and scale the coordinates by h
+    # Shifting all contacts to the center of the box
+    # and re-scaling the coordinates by 1/h
     xyz = (xyz_new + 0.5 * width) / h
 
-    # residue indices
+    # Getting Residue indices
     i = idx[:,0].astype(dtype=np.int16).reshape((N,1))
-    
-    # atom types
+    # Getting atom types
     t = idx[:,2].astype(dtype=np.int16).reshape((N,1))
     
-    # discretized x,y,z coordinates
+    # Discretized x,y,z coordinates
     klm = np.floor(xyz).astype(dtype=np.int16)
 
-    # atom coordinates in the cell it occupies
+    # For each atom, find out where in correspoding voxcel they are locating.
+    # This is used for trilinear interpolation.
     d = xyz - np.floor(xyz)
 
-    # trilinear interpolation
+    # Performing trilinear interpolation. See https://en.wikipedia.org/wiki/Trilinear_interpolation
     klm0 = np.array(klm[:,0]).reshape((N,1))
     klm1 = np.array(klm[:,1]).reshape((N,1))
     klm2 = np.array(klm[:,2]).reshape((N,1))
@@ -416,7 +422,7 @@ def set_neighbors3D(pdict):
 
     a = np.vstack([a000, a100, a010, a110, a001, a101, a011, a111])
     
-    # make sure projected contacts fit into the box
+    # Making sure projected contacts fit into the box
     b = a[(np.min(a[:,1:4],axis=-1) >= 0) & (np.max(a[:,1:4],axis=-1) < nbins) & (a[:,5]>1e-5)]
     
     pdict['idx'] = b[:,:5].astype(np.uint16)
