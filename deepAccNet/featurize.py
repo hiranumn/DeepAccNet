@@ -11,8 +11,17 @@ import time
 from .pyprotein import *
 from .dataProcessingUtils import *
 
-# In: pose, Out: backbone-to-backbone hydrogen bonds
-def get_hbonds(pose):  
+def get_hbonds(pose):
+    """Function to extract 2D map of hydrogen bonds given a pose.
+
+    Args:
+        param1 (pose): pose to work with. 
+
+    Returns:
+        hb_srbb: a 2d map of srbb hydrogen bonds
+        hb_lrbb: a 2d map of srbb hydrogen bonds
+    """
+    
     hb_srbb = []
     hb_lrbb = []
     
@@ -38,6 +47,15 @@ def get_hbonds(pose):
 
 # In: pose, Out: distance maps with different atoms
 def extract_multi_distance_map(pose):
+    """Function to extract 2D distance map between residues.
+
+    Args:
+        param1 (pose): pose to work with. 
+
+    Returns:
+        output: distance map of residues between Cb-Cb, Tip-Tip, Ca-Tip, Tip-Ca.
+        For the definition of tip see dataProcessingUtils.py
+    """
     # Get CB to CB distance map use CA if CB does not exist
     x1 = get_distmaps(pose, atom1="CB", atom2="CB", default="CA")
     # Get CA to CA distance map
@@ -51,6 +69,17 @@ def extract_multi_distance_map(pose):
 
 # In: pose, Out: (3d-matrix with 2d energies and cb-distmap, aa sequences) 
 def extract_EnergyDistM(pose, energy_terms):
+    
+    """Function to extract 2D feature map.
+
+    Args:
+        param1 (pose): pose to work with. :
+        param2 (energy_terms): a list of rosetta energy terms. See dataProcessingUtils.py
+
+    Returns:
+        output: 3D matrix of size feature by protein length by protein length.
+        The first channel is Cb-distance map. The rest are energy terms and hbond presence.
+    """
 
     # Get the number of residues in the protein.
     length = int(pose.total_residue())
@@ -148,6 +177,17 @@ def extract_EnergyDistM(pose, energy_terms):
     return tensor, aas
 
 def extract_AAs_properties_ver1(aas):
+    
+    """Function to extract AA property, a part of 1D feature map.
+
+    Args:
+        param1 (aas): Amino acid sequence
+
+    Returns:
+        output: 2D marix of size feature by protein length.
+        They contain 1-hot encoded residue, blosum column, normalized distance from terminus, meiler features.
+    """
+    
     _prop = np.zeros((20+24+1+7, len(aas)))
     for i in range(len(aas)):
         aa = aas[i]
@@ -158,6 +198,10 @@ def extract_AAs_properties_ver1(aas):
     return _prop
 
 def get_coords(p):
+    
+    """Function to get coordinates of N, Ca, C.
+       It also calculates Cb positions from those.
+    """
 
     nres = pyrosetta.rosetta.core.pose.nres_protein(p)
 
@@ -180,6 +224,12 @@ def get_coords(p):
 
 
 def set_lframe(pdict):
+    """
+    Defines reference frame per residue using backbone atoms.
+    z is normalized vector between Cb and Ca.
+    x is perpendicular to that and Ca-N vector.
+    y is perpendicular to the z-x plane.
+    """
 
     # local frame
     z = pdict['Cb'] - pdict['Ca']
@@ -197,6 +247,10 @@ def set_lframe(pdict):
 
 
 def get_dihedrals(a, b, c, d):
+    """
+    A function that gets dihedral angles between two residues.
+    See set_neighbors6D for usage.
+    """
 
     b0 = -1.0*(b - a)
     b1 = c - b
@@ -263,8 +317,18 @@ def set_neighbors6D(pdict):
     pdict['theta6d'] = theta6d
     pdict['phi6d'] = phi6d
 
-
 def set_neighbors3D(pdict):
+    """
+    A function that gets 3D coordinates of relavant atoms in each local frame defined per residue.
+
+    Args:
+        param1 (pdict): dictionary containing, pose, nres, lfr, Ca. They can be generated with functions above.
+        See init_pose for how they are done.
+
+    Returns:
+        inds: (#atoms) by 5 2D matrix containing (index of residue, x, y, z, channel)
+        vals: (#atoms) by 1 matrix containing values to fill at each location defined by inds.
+    """
 
     # get coordinates of all non-hydrogen atoms
     # and their types
@@ -635,6 +699,35 @@ def process(args):
             euler = euler.astype(np.float16),
             maps = maps.astype(np.float16))
         if verbose: print("Processed "+filename+" (%0.2f seconds)" % (time.time() - start_time))
+    except Exception as inst:
+        print("While processing", outfile+":", inst)
+        
+def process_from_pose(pose):
+    try:
+        fa_scorefxn = get_fa_scorefxn()
+        score = fa_scorefxn(pose)
+
+        pdict = init_pose(pose)
+        
+        euler = getEulerOrientation(pose)
+        maps = extract_multi_distance_map(pose)
+        _2df, aas = extract_EnergyDistM(pose, energy_terms)
+        _1df, _ = extractOneBodyTerms(pose)
+        prop = extract_AAs_properties_ver1(aas)
+
+        output = {"idx": pdict['idx'],
+                  "val": pdict['val'],
+                  "phi": pdict['phi'].astype(np.float16),
+                  "psi": pdict['psi'].astype(np.float16),
+                  "tbt": _2df.astype(np.float16),
+                  "obt": _1df.astype(np.float16),
+                  "prop" : prop.astype(np.float16),
+                  "euler": euler.astype(np.float16),
+                  "maps" : maps.astype(np.float16),
+                  "omega6d": pdict['omega6d'].astype(np.float16),
+                  "theta6d": pdict['theta6d'].astype(np.float16),
+                  "phi6d"  : pdict['phi6d'].astype(np.float16)}
+        return output
     except Exception as inst:
         print("While processing", outfile+":", inst)
         
