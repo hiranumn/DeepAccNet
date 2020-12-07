@@ -44,6 +44,46 @@ def getData(tmp, cutoff=0, bertpath=""):
 
     return _3d, _1d, _2d, _truth
 
+# GET DATA
+def getData_from_dict(data, cutoff=0, bertpath=""):
+
+    # 3D coordinate information
+    idx = data["idx"]
+    val = data["val"]
+
+    # 1D information
+    angles = np.stack([np.sin(data["phi"]),
+                       np.cos(data["phi"]),
+                       np.sin(data["psi"]),
+                       np.cos(data["psi"])], axis=-1)
+    obt = data["obt"].T
+    prop = data["prop"].T
+
+    # 2D information
+    orientations = np.stack([data["omega6d"], data["theta6d"], data["phi6d"]], axis=-1)
+    orientations = np.concatenate([np.sin(orientations), np.cos(orientations)], axis=-1)
+    euler = np.concatenate([np.sin(data["euler"]), np.cos(data["euler"])], axis=-1)
+    maps = data["maps"]
+    tbt = data["tbt"].T
+    sep = seqsep(tbt.shape[0])
+
+    # Transform input distance
+    tbt[:,:,0] = transform(tbt[:,:,0])
+    maps = transform(maps, cutoff=cutoff)
+
+    _3d = (idx, val)
+    _1d = (np.concatenate([angles, obt, prop], axis=-1), None)
+    
+    if bertpath!="":
+        bert = np.load(bertpath)
+        bert = np.transpose(bert, [1,2,0])
+        _2d = np.concatenate([tbt, maps, euler, orientations, sep, bert], axis=-1)
+    else:
+        _2d = np.concatenate([tbt, maps, euler, orientations, sep], axis=-1)
+    _truth = None
+
+    return _3d, _1d, _2d, _truth
+
 # VARIANCE REDUCTION
 def transform(X, cutoff=4, scaling=3.0):
     X_prime = np.maximum(X, np.zeros_like(X) + cutoff) - cutoff
@@ -90,6 +130,10 @@ def clean(samples, outfolder, ensemble=False, verbose=False):
             if verbose: print("Removing", join(outfolder, samples[i]+".features.npz"))
             if isfile(join(outfolder, samples[i]+".features.npz")):
                 os.remove(join(outfolder, samples[i]+".features.npz"))
+            if isfile(join(outfolder, samples[i]+".fa")):
+                os.remove(join(outfolder, samples[i]+".fa"))
+            if isfile(join(outfolder, "bert_"+samples[i]+".npy")):
+                os.remove(join(outfolder, "bert_"+samples[i]+".npy"))
             if ensemble:
                 for j in ["best", "second", "third", "fourth"]:
                     if verbose: print("Removing", join(outfolder, samples[i]+"_"+j+".npz"))

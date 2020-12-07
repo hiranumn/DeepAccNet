@@ -90,6 +90,10 @@ def clean(samples, outfolder, ensemble=False, verbose=False):
             if verbose: print("Removing", join(outfolder, samples[i]+".features.npz"))
             if isfile(join(outfolder, samples[i]+".features.npz")):
                 os.remove(join(outfolder, samples[i]+".features.npz"))
+            if isfile(join(outfolder, samples[i]+".fa")):
+                os.remove(join(outfolder, samples[i]+".fa"))
+            if isfile(join(outfolder, "bert_"+samples[i]+".npy")):
+                os.remove(join(outfolder, "bert_"+samples[i]+".npy"))
             if ensemble:
                 for j in ["best", "second", "third", "fourth"]:
                     if verbose: print("Removing", join(outfolder, samples[i]+"_"+j+".npz"))
