@@ -13,7 +13,7 @@ import os
 
 from pyrosetta import *
 from pyrosetta.rosetta import *
-init(extra_options = "-constant_seed -mute all")
+init(extra_options = "-constant_seed -mute all -read_only_ATOM_entries")
 
 def get_lddt(estogram, mask, center=7, weights=[1,1,1,1]):  
     # Remove diagonal from the mask.
@@ -56,6 +56,12 @@ def main():
                         action="store_true",
                         default=False,
                         help="Make binder related predictions (Assumes chain A to be a binder).")
+    
+    parser.add_argument("--savehidden",
+                        "-sh", action="store",
+                        type=str,
+                        default="",
+                        help="saves last hidden layer if not empty (Default: "")")
     
     parser.add_argument("--reprocess",
                         "-r",
@@ -119,11 +125,17 @@ def main():
     # Open with append
     if not isfile(args.outfile) or args.reprocess:
         outfile = open(args.outfile, "w")
-        outfile.write("name, global_lddt, interface_lddt, binder_lddt\n")
+        if args.binder:
+            outfile.write("name, global_lddt, interface_lddt, binder_lddt\n")
+        else:
+            outfile.write("name, global_lddt\n")
         done = []
     else:
         outfile = open(args.outfile, "a")
         done = pd.read_csv(args.outfile)["name"].values
+        
+    if args.savehidden != "" and not isdir(args.savehidden):
+        os.mkdir(args.savehidden)
     
     with torch.no_grad():
         # Parse through poses    
@@ -132,9 +144,10 @@ def main():
             
             input_stream.fill_pose(pose)
             name = core.pose.tag_from_pose(pose)
-            print(name)
             if name in done:
+                print(name, "is already done.")
                 continue
+            print("Working on", name)
             per_sample_result = [name]
             
             # This is where featurization happens
@@ -148,7 +161,12 @@ def main():
             idx_g = torch.Tensor(idx.astype(np.int32)).long().to(device)
             val_g = torch.Tensor(val).to(device)
 
-            estogram, mask, lddt, dmy = model(idx_g, val_g, f1d_g, f2d_g)
+            if args.savehidden != "":
+                estogram, mask, lddt, hidden, dmy = model(idx_g, val_g, f1d_g, f2d_g, output_hidden_layer=True)
+                hidden = hidden.cpu().detach().numpy()
+                np.save(join(args.savehidden, name+".npy"), hidden)
+            else:
+                estogram, mask, lddt, dmy = model(idx_g, val_g, f1d_g, f2d_g)
             lddt = lddt.cpu().detach().numpy()
             estogram = estogram.cpu().detach().numpy()
             mask = mask.cpu().detach().numpy()
@@ -177,7 +195,12 @@ def main():
                 val = val[index]
                 idx_g = torch.Tensor(idx.astype(np.int32)).long().to(device)
                 val_g = torch.Tensor(val).to(device)
-                estogram, mask, lddt, dmy = model(idx_g, val_g, f1d_g[:blen], f2d_g[:, :, :blen, :blen])
+                if args.savehidden != "":
+                    estogram, mask, lddt, hidden, dmy = model(idx_g, val_g, f1d_g[:blen], f2d_g[:, :, :blen, :blen], output_hidden_layer=True)
+                    hidden = hidden.cpu().detach().numpy()
+                    np.save(join(args.savehidden, name+"_b.npy"), hidden)
+                else:
+                    estogram, mask, lddt, dmy = model(idx_g, val_g, f1d_g[:blen], f2d_g[:, :, :blen, :blen])
                 lddt = lddt.cpu().detach().numpy()
                 estogram = estogram.cpu().detach().numpy()
                 mask = mask.cpu().detach().numpy()
