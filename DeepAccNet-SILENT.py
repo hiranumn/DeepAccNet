@@ -185,6 +185,7 @@ def main():
                 
                 mask2 = np.zeros(mask.shape)
                 mask2[:blen, blen:] = 1
+                mask2[blen:, :blen] = 1 
                 interface_lddt = np.mean(get_lddt(estogram.transpose([1,2,0]), np.multiply(mask, mask2)))
                 per_sample_result.append(interface_lddt)
                 
