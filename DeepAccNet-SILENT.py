@@ -1,3 +1,4 @@
+#!/software/conda/envs/tensorflow/bin/python
 import sys
 import argparse
 import os
@@ -107,9 +108,9 @@ def main():
     import deepAccNet as dan
     
     model = dan.DeepAccNet(twobody_size = 49 if args.bert else 33)
-    checkpoint = torch.load(join(modelpath, "best.pkl"))
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    checkpoint = torch.load(join(modelpath, "best.pkl"), map_location=device)
     model.load_state_dict(checkpoint["model_state_dict"])
-    device = torch.device("cuda:0" if torch.cuda.is_available() or args.cpu else "cpu")
     model.to(device)
     model.eval()
     

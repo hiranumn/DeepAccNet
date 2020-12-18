@@ -1,3 +1,4 @@
+#!/software/conda/envs/tensorflow/bin/python
 import sys
 import argparse
 import os
@@ -213,9 +214,9 @@ def main():
         result = {}
         for modelname in modelnames:
             model = dan.DeepAccNet(twobody_size = 49 if args.bert else 33)
-            checkpoint = torch.load(join(modelpath, modelname))
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+            checkpoint = torch.load(join(modelpath, modelname), map_location=device)
             model.load_state_dict(checkpoint["model_state_dict"])
-            device = torch.device("cuda:0" if torch.cuda.is_available() or args.cpu else "cpu")
             model.to(device)
             model.eval()
 
@@ -292,9 +293,11 @@ def main():
             
         if isfile(feature_file_name):
             # Load pytorch model:
-            model = dan.DeepAccNet()
-            model.load_state_dict(torch.load("models/regular_rep1/weights.pkl"))
-            device = torch.device("cuda:0" if torch.cuda.is_available() or args.cpu else "cpu")
+            #model = dan.DeepAccNet()
+            model = dan.DeepAccNet(twobody_size = 49 if args.bert else 33)
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+            #model.load_state_dict(torch.load("models/regular_rep1/weights.pkl"))
+            model.load_state_dict(torch.load(join(modelpath, "best.pkl"), map_location=device)['model_state_dict'])
             model.to(device)
             model.eval()
             
@@ -317,7 +320,7 @@ def main():
                 dan.clean([outsamplename],
                           outfolder,
                           verbose=args.verbose,
-                          noEnsemble=True)
+                          ensemble=False)
         else:
             print(f"Feature file does not exist: {feature_file_name}", file=sys.stderr)
             
