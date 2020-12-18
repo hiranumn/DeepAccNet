@@ -179,7 +179,6 @@ def main():
                 
                 # Binder length
                 blen = pose.conformation().chain_end(1) - pose.conformation().chain_begin(1) + 1
-                blen = 50
                 plen = estogram.shape[-1]
                 if blen==plen:
                     continue
