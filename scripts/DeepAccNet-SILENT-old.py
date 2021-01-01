@@ -11,7 +11,6 @@ import torch
 import time
 import pandas as pd
 import os
-import glob
 
 from pyrosetta import *
 from pyrosetta.rosetta import *
@@ -76,14 +75,6 @@ def main():
                         action="store_true",
                         default=False,
                         help="Run with bert features. Use extractBert.py to generate them. (Default: False)")
-
-    parser.add_argument("--features_only",
-                        action="store_true",
-                        help="Just dump features")
-
-    parser.add_argument("--prediction_only",
-                        action="store_true",
-                        help="Assumes stored features")
     
     args = parser.parse_args()
     
@@ -108,21 +99,6 @@ def main():
         return -1
     
     if args.verbose: print("using", modelpath)
-
-    feature_folder = args.outfile + "_features/"
-
-    if ( args.features_only ):
-        if ( not os.path.exists(feature_folder) ):
-            os.mkdir(feature_folder)
-
-    if ( args.prediction_only ):
-        if ( not os.path.exists(feature_folder)):
-            print("--prediction_only: Features have not been generated. Run with --features_only first or remove this flag.")
-            return -1
-
-    if ( args.features_only and args.prediction_only ):
-        print("You can't specify both --features_only and --prediction_only at the same time.")
-        return -1
         
     ##############################
     # Importing larger libraries #
@@ -131,35 +107,33 @@ def main():
     sys.path.insert(0, script_dir)
     import deepAccNet as dan
     
-    if ( not args.features_only ):
-        model = dan.DeepAccNet(twobody_size = 49 if args.bert else 33)
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        checkpoint = torch.load(join(modelpath, "best.pkl"), map_location=device)
-        model.load_state_dict(checkpoint["model_state_dict"])
-        model.to(device)
-        model.eval()
+    model = dan.DeepAccNet(twobody_size = 49 if args.bert else 33)
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    checkpoint = torch.load(join(modelpath, "best.pkl"), map_location=device)
+    model.load_state_dict(checkpoint["model_state_dict"])
+    model.to(device)
+    model.eval()
     
     #############################
     # Parse through silent file #
     #############################
     
-    # loading the silent like this allows us to get names without loading poses
-    sfd_in = rosetta.core.io.silent.SilentFileData(rosetta.core.io.silent.SilentFileOptions())
-    sfd_in.read_file(args.infile)
-    names = sfd_in.tags()
+    silent_files = utility.vector1_utility_file_FileName()
+    for silent_file in basic.options.get_file_vector_option("in:file:silent"):
+        silent_files.append(utility.file.FileName(args.infile))
+    input_stream = core.import_pose.pose_stream.SilentFilePoseInputStream(args.infile)
 
     # Open with append
     if not isfile(args.outfile) or args.reprocess:
         outfile = open(args.outfile, "w")
         if args.binder:
-            outfile.write("global_lddt interface_lddt binder_lddt description\n")
+            outfile.write("name, global_lddt, interface_lddt, binder_lddt\n")
         else:
-            outfile.write("global_lddt description\n")
+            outfile.write("name, global_lddt\n")
         done = []
     else:
         outfile = open(args.outfile, "a")
-        done = pd.read_csv(args.outfile, sep="\s+")["description"].values
-
+        done = pd.read_csv(args.outfile)["name"].values
         
     if args.savehidden != "" and not isdir(args.savehidden):
         os.mkdir(args.savehidden)
@@ -167,39 +141,18 @@ def main():
     with torch.no_grad():
         # Parse through poses    
         pose = core.pose.Pose()
-        for name in names:
-
+        while input_stream.has_another_pose():
+            
+            input_stream.fill_pose(pose)
+            name = core.pose.tag_from_pose(pose)
             if name in done:
                 print(name, "is already done.")
                 continue
-
-
             print("Working on", name)
             per_sample_result = [name]
-            feature_file = feature_folder + name
-
-
             
             # This is where featurization happens
-            if ( args.prediction_only ):
-                try:
-                    features = np.load(feature_file + ".npz")
-                except:
-                    print("Unable to load features for " + name)
-                    continue
-            else:
-                if ( args.features_only and os.path.exists( feature_file + ".npz" )):
-                    print(name, "is already done.")
-                    continue
-
-                sfd_in.get_structure(name).fill_pose(pose)
-                features = dan.process_from_pose(pose)
-                features['blen'] = np.array(pose.conformation().chain_end(1) - pose.conformation().chain_begin(1) + 1)
-
-            if ( args.features_only ):
-                np.savez(feature_file, **features)
-                continue
-
+            features = dan.process_from_pose(pose)
             
             # This is where prediction happens
             # For the whole 
@@ -226,7 +179,7 @@ def main():
             if args.binder:
                 
                 # Binder length
-                blen = features['blen']
+                blen = pose.conformation().chain_end(1) - pose.conformation().chain_begin(1) + 1
                 plen = estogram.shape[-1]
                 if blen==plen:
                     continue
@@ -257,15 +210,12 @@ def main():
             # Write the result
             if args.binder:
                 r = per_sample_result
-                outfile.write("%5f %5f %5f %s\n"%(r[1], r[2], r[3], r[0]))
+                outfile.write("%s, %5f, %5f, %5f\n"%(r[0], r[1], r[2], r[3]))
             else:
                 r = per_sample_result
-                outfile.write("%5f %s\n"%(r[1], r[0]))
+                outfile.write("%s, %5f\n"%(r[0], r[1]))
             outfile.flush()
             os.fsync(outfile.fileno())
-
-            if ( args.prediction_only ):
-                os.remove(feature_file + ".npz")
             
     outfile.close()
             

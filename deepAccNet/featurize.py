@@ -143,19 +143,28 @@ def extract_EnergyDistM(pose, energy_terms):
     # Use CB idstance (CA if CB does not exist) #
     # to calculate distance between residues    #
     #############################################
+    xyzs = []
+    for i in range(length):
+        index1 = i + 1
+        if ( pose.residue(index1).has("CB") ):
+            xyzs.append(pose.residue(index1).xyz("CB"))
+        else:
+            xyzs.append(pose.residue(index1).xyz("CA"))
     for i in range(length):
         for j in range(length):
             index1 = i + 1    
             index2 = j + 1
             # Calculate distance and store. Use CA if CB does not exist.
-            if pose.residue(index1).has("CB"):
-                vector1 = pose.residue(index1).xyz("CB")
-            else:
-                vector1 = pose.residue(index1).xyz("CA")
-            if pose.residue(index2).has("CB"):
-                vector2 = pose.residue(index2).xyz("CB")
-            else:
-                vector2 = pose.residue(index2).xyz("CA")
+            vector1 = xyzs[i]
+            vector2 = xyzs[j]
+            # if pose.residue(index1).has("CB"):
+            #     vector1 = pose.residue(index1).xyz("CB")
+            # else:
+            #     vector1 = pose.residue(index1).xyz("CA")
+            # if pose.residue(index2).has("CB"):
+            #     vector2 = pose.residue(index2).xyz("CB")
+            # else:
+            #     vector2 = pose.residue(index2).xyz("CA")
             distance = vector1.distance(vector2)
             
             tensor[0, index1-1, index2-1] = distance #1-sigmoid(displacement, scale=10, offset=-5)
