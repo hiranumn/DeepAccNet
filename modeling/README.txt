@@ -30,7 +30,7 @@ An example SLURM script "slurm_example.sh" is provided. Below is more detailed d
    > python $SCRIPTPATH/MainIteration.py idiv/pick.Q.out init.npz ihyb.a (will take a few hours using 60 cores)
    
 4-1. Optionally, run a "conservaative-mode" iterative intensification separately at a directory 'ihyb.c'
-   > python $SCRIPTPATH/MainIteration.py idiv/pick.Q.out init.npz ihyb.c -opt cR2D (will take a few hours using 60 cores)
+   > python $SCRIPTPATH/MainIteration.py idiv/pick.Q.out init.npz ihyb.c -cons (will take a few hours using 60 cores)
 
 5. Post-process the iteration results to get a representative model (takes 5~10 minutes in a single core)
    > python $SCRIPTPATH/PostProcess.py [ihyb.a/ihyb.c]

@@ -19,6 +19,6 @@ echo "Iterative intensification"
 python $SCRIPTPATH/MainIteration.py  idiv/pick.Q.out init.npz ihyb.a
 
 echo "Post-processing"
-python $SCRIPTPATH/postprocess.py ihyb.a
+python $SCRIPTPATH/PostProcess.py ihyb.a
 
 exit 0

@@ -625,8 +625,7 @@ def main(args):
 
         if runinfo.is_recomb_iter(it):
             # make a separate logic
-            #run_iter_recomb(runinfo)
-            pass
+            run_iter_recomb(runinfo)
         else:
             # DL portion comes here
             prepick(runinfo)
@@ -644,7 +643,7 @@ def setup(inputsilent,predf,workpath):
     iQ = np.mean(np.load(predf)['lddt'])
 
     if '-cons' in sys.argv: #conservative mode
-        args = ['-cstweight','1.0'
+        args = ['-cstweight','1.0',
                 '-e2cst_args',"-pcore 0.7 0.7 0.8"]
         
         simcut = min(60,max(30,iQ))
