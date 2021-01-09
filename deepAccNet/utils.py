@@ -97,7 +97,7 @@ def seqsep(psize, normalizer=100, axis=-1):
             ret[i,j] = abs(i-j)*1.0/100-1.0
     return np.expand_dims(ret, axis)
 
-def merge(samples, outfolder, verbose=False):
+def merge(samples, outfolder, per_res_only=False, verbose=False):
     for j in range(len(samples)):
         try:
             if verbose: print("Merging", samples[j])
@@ -108,19 +108,26 @@ def merge(samples, outfolder, verbose=False):
             for i in ["best", "second", "third", "fourth"]:
                 temp = np.load(join(outfolder, samples[j]+"_"+i+".npz"))
                 lddt.append(temp["lddt"])
+                if per_res_only:
+                    continue
                 estogram.append(temp["estogram"])
                 mask.append(temp["mask"])
 
             # Averaging
             lddt = np.mean(lddt, axis=0)
-            estogram = np.mean(estogram, axis=0)
-            mask = np.mean(mask, axis=0)
+            if not per_res_only:
+                estogram = np.mean(estogram, axis=0)
+                mask = np.mean(mask, axis=0)
 
             # Saving
-            np.savez_compressed(join(outfolder, samples[j]+".npz"),
-                    lddt = lddt.astype(np.float16),
-                    estogram = estogram.astype(np.float16),
-                    mask = mask.astype(np.float16))
+            if per_res_only:
+                np.savez_compressed(join(outfolder, samples[j]+".npz"),
+                        lddt = lddt.astype(np.float16))
+            else:
+                np.savez_compressed(join(outfolder, samples[j]+".npz"),
+                        lddt = lddt.astype(np.float16),
+                        estogram = estogram.astype(np.float16),
+                        mask = mask.astype(np.float16))
         except:
             print("Failed to merge for", join(outfolder, samples[j]+".npz"))
         

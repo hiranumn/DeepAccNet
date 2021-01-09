@@ -20,6 +20,7 @@ optional arguments:
   -h, --help            show this help message and exit
   --pdb, -pdb           Running on a single pdb file instead of a folder (Default: False)
   --csv, -csv           Writing results to a csv file (Default: False)
+  --per_res_only, -pr   Writing per-residue accuracy only (Default: False)
   --leaveTempFile, -lt  Leaving temporary files (Default: False)
   --process PROCESS, -p PROCESS
                         Specifying # of cpus to use for featurization (Default: 1)

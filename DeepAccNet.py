@@ -34,6 +34,12 @@ def main():
                         action="store_true",
                         default=False,
                         help="Writing results to a csv file (Default: False)")
+
+    parser.add_argument("--per_res_only",
+                        "-pr",
+                        action="store_true",
+                        default=False,
+                        help="Store per-residue accuracy only (Default: False)")
     
     parser.add_argument("--leaveTempFile",
                         "-lt",
@@ -242,15 +248,23 @@ def main():
 
                         if not args.csv:
                             if args.ensemble:
-                                np.savez_compressed(join(args.output, s+"_"+modelname[:-4]+".npz"),
-                                                    lddt = lddt.cpu().detach().numpy().astype(np.float16),
-                                                    estogram = estogram.cpu().detach().numpy().astype(np.float16),
-                                                    mask = mask.cpu().detach().numpy().astype(np.float16))
+                                if args.per_res_only:
+                                    np.savez_compressed(join(args.output, s+"_"+modelname[:-4]+".npz"),
+                                                        lddt = lddt.cpu().detach().numpy().astype(np.float16))
+                                else:
+                                    np.savez_compressed(join(args.output, s+"_"+modelname[:-4]+".npz"),
+                                                        lddt = lddt.cpu().detach().numpy().astype(np.float16),
+                                                        estogram = estogram.cpu().detach().numpy().astype(np.float16),
+                                                        mask = mask.cpu().detach().numpy().astype(np.float16))
                             else:
-                                np.savez_compressed(join(args.output, s+".npz"),
-                                                    lddt = lddt.cpu().detach().numpy().astype(np.float16),
-                                                    estogram = estogram.cpu().detach().numpy().astype(np.float16),
-                                                    mask = mask.cpu().detach().numpy().astype(np.float16))
+                                if args.per_res_only:
+                                    np.savez_compressed(join(args.output, s+".npz"),
+                                                        lddt = lddt.cpu().detach().numpy().astype(np.float16))
+                                else:
+                                    np.savez_compressed(join(args.output, s+".npz"),
+                                                        lddt = lddt.cpu().detach().numpy().astype(np.float16),
+                                                        estogram = estogram.cpu().detach().numpy().astype(np.float16),
+                                                        mask = mask.cpu().detach().numpy().astype(np.float16))
                 except:
                     print("Failed to predict for", join(args.output, s+"_"+modelname[:-4]+".npz"))
         
@@ -311,10 +325,14 @@ def main():
                 val = torch.Tensor(val).to(device)
 
                 estogram, mask, lddt, dmy = model(idx, val, f1d, f2d)
-                np.savez_compressed(outsamplename+".npz",
-                        lddt = lddt.cpu().detach().numpy().astype(np.float16),
-                        estogram = estogram.cpu().detach().numpy().astype(np.float16),
-                        mask = mask.cpu().detach().numpy().astype(np.float16))
+                if args.per_res_only:
+                    np.savez_compressed(outsamplename+".npz",
+                            lddt = lddt.cpu().detach().numpy().astype(np.float16))
+                else:
+                    np.savez_compressed(outsamplename+".npz",
+                            lddt = lddt.cpu().detach().numpy().astype(np.float16),
+                            estogram = estogram.cpu().detach().numpy().astype(np.float16),
+                            mask = mask.cpu().detach().numpy().astype(np.float16))
 
             if not args.leaveTempFile:
                 dan.clean([outsamplename],
