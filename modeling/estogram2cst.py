@@ -112,7 +112,7 @@ def estimate_lddtG_from_lr(pred):
     nres = len(pred)
     P0mean = np.zeros(nres)
     for i in range(nres):
-        n = 0
+        n = 0.001
         for j in range(nres):
             if abs(i-j) < 13: continue ## up to 3 H turns
             n += 1
@@ -134,7 +134,7 @@ def ULR_from_pred(pred,lddtG,
     # non-local distance accuracy -- removes bias from helices
     P0mean = np.zeros(nres)
     for i in range(nres):
-        n = 0
+        n = 0.001
         for j in range(nres):
             if abs(i-j) < 13: continue ## up to 3 H turns
             n += 1
@@ -144,7 +144,7 @@ def ULR_from_pred(pred,lddtG,
     #soften by 9-window sliding
     P0mean_soft = np.zeros(nres)
     for i in range(nres):
-        n = 0
+        n = 0.001
         for k in range(-4,5):
             if i+k < 0 or i+k >= nres: continue
             n += 1
@@ -252,6 +252,9 @@ def estogram2cst(dat,pdb,cencst,facst,
 
     Q = np.mean(dat['lddt'])
     dat = dat['estogram']
+    if dat.shape[0] == len(DELTA) and dat.shape[-2] != len(DELTA):
+        dat = np.transpose(dat)
+    
     nres = len(dat)
     d0mtrx = utils.read_d0mtrx(pdb)
     aas = utils.pdb2res(pdb)
@@ -414,9 +417,13 @@ def dat2ulr(pdb,pred,lddtG):
 
 def main(npz,pdb,cstprefix=None):
     dat = np.load(npz)
+    esto = dat['estogram']
+    if esto.shape[0] == len(DELTA) and esto.shape[-2] != len(DELTA):
+        esto = np.transpose(esto)
+        
     lddtG = np.mean(dat['lddt'])
-    lddtG_lr = estimate_lddtG_from_lr(dat['estogram']) #this is long-range-only lddt
-    ulrs = dat2ulr(pdb,dat['estogram'],lddtG_lr)
+    lddtG_lr = estimate_lddtG_from_lr(esto) #this is long-range-only lddt
+    ulrs = dat2ulr(pdb,esto,lddtG_lr)
     
     ulr_exharm,weakcst,refcorr = ([],'spline',True)
     if '-exulr_from_harm' in sys.argv:
